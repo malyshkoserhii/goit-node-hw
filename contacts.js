@@ -1,10 +1,13 @@
 const fs = require("fs").promises;
 const path = require("path");
+const generateUniqueId = require("generate-unique-id");
 
-const contactsPath = path.relative(
-  "D:\\GoIT\\node\\goit-node-hw",
-  "D:\\GoIT\\node\\goit-node-hw\\db\\contacts.json"
-);
+const contactsPath = path.join(__dirname, "db", "contacts.json");
+
+const setContactId = generateUniqueId({
+  length: 3,
+  useLetters: false,
+});
 
 async function listContacts() {
   try {
@@ -23,14 +26,12 @@ async function getContactById(contactId) {
   try {
     const data = await fs.readFile(contactsPath, "utf-8");
     const contacts = JSON.parse(data);
-
     const showContact = await contacts.find((contact) => {
       if (contact.id === contactId) {
         console.table(contact);
         return;
       }
     });
-
     return showContact;
   } catch (error) {
     console.log(error);
@@ -42,8 +43,12 @@ async function removeContact(contactId) {
     const data = await fs.readFile(contactsPath, "utf-8");
     const contacts = JSON.parse(data);
     const updatedList = contacts.filter(({ id }) => id !== contactId);
-    await fs.writeFile(contactsPath, JSON.stringify(updatedList));
-    console.log(`Contact has been removed`);
+    await fs.writeFile(
+      contactsPath,
+      JSON.stringify(updatedList, null, 2),
+      "utf-8"
+    );
+    console.log("Contact has been removed");
   } catch (error) {
     console.log(error);
   }
@@ -52,7 +57,7 @@ async function removeContact(contactId) {
 async function addContact(name, email, phone) {
   try {
     const newContact = {
-      id: Date.now(),
+      id: setContactId,
       name,
       email,
       phone,
@@ -60,7 +65,7 @@ async function addContact(name, email, phone) {
     const data = await fs.readFile(contactsPath, "utf-8");
     const contacts = JSON.parse(data);
     const updatedList = [newContact, ...contacts];
-    await fs.writeFile(contactsPath, JSON.stringify(updatedList));
+    fs.writeFile(contactsPath, JSON.stringify(updatedList, null, 2), "utf-8");
     console.log(`Contact has been added`);
   } catch (error) {
     console.log(error);

@@ -9,15 +9,17 @@ const {
 } = require("./contacts.js");
 
 const program = new Command();
+
 program
   .version("0.0.1")
-  .option("-a, --action <type>", "all contacts")
+  .option("-a, --action <type>", "show all contacts")
   .option("-i, --id [id]", "get contact by id")
   .option("-n, --name [name]", "contact name", "EMPTY FIELD")
   .option("-e, --email [email]", "contact email", "EMPTY FIELD")
   .option("-p, --phone [phone]", "contact phone number", "EMPTY FIELD");
 
 program.parse(process.argv);
+
 const options = program.opts();
 
 function invokeAction({ action, id, name, email, phone }) {
@@ -27,7 +29,7 @@ function invokeAction({ action, id, name, email, phone }) {
       break;
 
     case "get":
-      console.log("optionsID:", id);
+      getContactById(Number(id));
       break;
 
     case "add":
@@ -35,7 +37,7 @@ function invokeAction({ action, id, name, email, phone }) {
       break;
 
     case "remove":
-      removeContact(id);
+      removeContact(Number(id));
       break;
 
     default:
@@ -43,4 +45,4 @@ function invokeAction({ action, id, name, email, phone }) {
   }
 }
 
-// invokeAction(options);
+invokeAction(options);
